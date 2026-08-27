@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="route_service.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="4578"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="bookings" custom_title="0" dock_id="1" table="4,8:mainbookings"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011e00ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">-- dbname = route_service.db
+PRAGMA foreign_keys = ON;
+
+-- Cleaning up old tables 
+DROP TABLE IF EXISTS route_execution_cache;
+DROP TABLE IF EXISTS road_edges;
+DROP TABLE IF EXISTS road_nodes;
+DROP TABLE IF EXISTS bookings;
+DROP TABLE IF EXISTS vehicles;
+
+-- SHARED CORE TABLES (Fleet &amp; Bookings)
+
+CREATE TABLE vehicles (
+    vehicle_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    vehicle_type TEXT NOT NULL,
+    specs TEXT NOT NULL,
+    pricing TEXT NOT NULL,
+    rating REAL DEFAULT 5.00,
+    current_lat REAL NOT NULL,
+    current_lng REAL NOT NULL,
+    availability_status TEXT DEFAULT 'AVAILABLE',
+    created_at TEXT DEFAULT (DATETIME('now')),
+    updated_at TEXT DEFAULT (DATETIME('now'))
+);
+
+CREATE TABLE bookings (
+    booking_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    farmer_id INTEGER NOT NULL,
+    farm_lat REAL NOT NULL,
+    farm_lng REAL NOT NULL,
+    acreage REAL NOT NULL,
+    crop_type TEXT NOT NULL,
+    required_window_start TEXT NOT NULL,
+    required_window_end TEXT NOT NULL,
+    booking_status TEXT DEFAULT 'PENDING',
+    created_at TEXT DEFAULT (DATETIME('now'))
+);
+
+-- ROUTE OPTIMIZATION SCHEMA
+
+CREATE TABLE road_nodes (           -- Physical map locations
+    node_id INTEGER PRIMARY KEY,    -- Unique location ID
+    node_name TEXT,                 -- Location name
+    lat REAL NOT NULL,              -- GPS latitude
+    lng REAL NOT NULL,              -- GPS longitude
+    elevation_meters REAL DEFAULT 0.0, -- Height above sea
+    is_farm_gate INTEGER DEFAULT 0, -- Is destination farm
+    is_depot INTEGER DEFAULT 0      -- Is starting depot
+);
+
+CREATE TABLE road_edges (           -- Physical road segments
+    edge_id INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique road ID
+    u_node INTEGER NOT NULL,        -- Start node ID
+    v_node INTEGER NOT NULL,        -- End node ID
+    base_distance_km REAL NOT NULL, -- Physical road length
+    surface_type TEXT DEFAULT 'PAVED_HIGHWAY', -- Road material type
+    max_weight_tonnes REAL DEFAULT 40.0,       -- Maximum weight limit
+    weather_penalty_multiplier REAL DEFAULT 1.0, -- Weather delay factor
+    computed_weight REAL NOT NULL,  -- Final graph cost
+    FOREIGN KEY (u_node) REFERENCES road_nodes(node_id) ON DELETE CASCADE, -- Validates start node
+    FOREIGN KEY (v_node) REFERENCES road_nodes(node_id) ON DELETE CASCADE  -- Validates end node
+);
+
+CREATE TABLE route_execution_cache ( -- Saved optimal routes
+    route_id INTEGER PRIMARY KEY AUTOINCREMENT, -- Unique route ID
+    vehicle_id INTEGER NOT NULL,     -- Assigned vehicle ID
+    origin_node INTEGER NOT NULL,    -- Start location ID
+    destination_node INTEGER NOT NULL, -- End location ID
+    path_node_sequence TEXT NOT NULL, -- Saved node path
+    total_distance_km REAL NOT NULL, -- Total path distance
+    total_travel_time_mins REAL NOT NULL, -- Estimated travel time
+    nodes_visited_count INTEGER NOT NULL, -- Algorithm search depth
+    algorithm_used TEXT NOT NULL,    -- Pathfinding algorithm used
+    computed_at TEXT DEFAULT (DATETIME('now')), -- Route calculation time
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(vehicle_id) ON DELETE CASCADE -- Validates assigned vehicle
+);
+
+
+-- SEED DATA FOR API TESTING
+
+-- A couple of vehicles so you have data to test with
+INSERT INTO vehicles (vehicle_id, owner_id, vehicle_type, specs, pricing, rating, current_lat, current_lng, availability_status) VALUES
+(1, 1, 'COMBINE_HARVESTER', '{&quot;hp&quot;: 380, &quot;cutterbar_width_m&quot;: 7.5}', '{&quot;hourly_rate&quot;: 145.00}', 4.92, 8.311400, 80.403700, 'AVAILABLE'),
+(3, 2, 'COMBINE_HARVESTER', '{&quot;hp&quot;: 210, &quot;cutterbar_width_m&quot;: 4.2}', '{&quot;hourly_rate&quot;: 95.00}',  4.60, 8.289000, 80.385000, 'AVAILABLE');
+
+-- bookings
+INSERT INTO bookings (booking_id, farmer_id, farm_lat, farm_lng, acreage, crop_type, required_window_start, required_window_end, booking_status) VALUES
+(1, 1, 8.335000, 80.445000, 32.50, 'PADDY', '2026-08-25 07:30:00', '2026-08-25 18:00:00', 'PENDING'),
+(2, 2, 8.362000, 80.412000, 18.00, 'PADDY', '2026-08-25 08:00:00', '2026-08-25 17:00:00', 'PENDING');
+
+-- Nodes (Intersections, Depots, Farms)
+INSERT INTO road_nodes (node_id, node_name, lat, lng, elevation_meters, is_farm_gate, is_depot) VALUES
+(1, 'Main Machinery Depot Alpha', 8.311400, 80.403700, 92.0, 0, 1),
+(2, 'Junction Medawachchiya Cross', 8.324500, 80.412000, 95.5, 0, 0),
+(3, 'Canal Bridge Crossing Alpha', 8.338000, 80.428000, 89.0, 0, 0),
+(4, 'Farm Gate Plot 1 (Booking 1)', 8.335000, 80.445000, 87.5, 1, 0),
+(5, 'Farm Gate Plot 2 (Booking 2)', 8.362000, 80.412000, 98.0, 1, 0),
+(6, 'South Agricultural Bypass', 8.295000, 80.395000, 94.0, 0, 0),
+(7, 'Farm Gate Plot 3 (Booking 3)', 8.298000, 80.362000, 91.0, 1, 0),
+(8, 'Gravel Road Intersect South', 8.275000, 80.390000, 90.0, 0, 0),
+(9, 'Farm Gate Plot 4 (Booking 4)', 8.275000, 80.418000, 88.0, 1, 0),
+(10, 'Sub-Depot Beta (East Sector)', 8.365000, 80.450000, 96.0, 0, 1);
+
+-- Edges (The roads between nodes)
+INSERT INTO road_edges (edge_id, u_node, v_node, base_distance_km, surface_type, max_weight_tonnes, weather_penalty_multiplier, computed_weight) VALUES
+(1, 1, 2, 1.75, 'PAVED_HIGHWAY', 45.0, 1.00, 1.750),
+(2, 2, 1, 1.75, 'PAVED_HIGHWAY', 45.0, 1.00, 1.750),
+(3, 2, 3, 2.20, 'GRAVEL', 28.0, 1.25, 2.750),
+(4, 3, 2, 2.20, 'GRAVEL', 28.0, 1.25, 2.750),
+(5, 3, 4, 1.90, 'DIRT_TRACK', 16.0, 1.60, 3.040),
+(6, 4, 3, 1.90, 'DIRT_TRACK', 16.0, 1.60, 3.040),
+(7, 2, 5, 4.20, 'PAVED_HIGHWAY', 40.0, 1.00, 4.200),
+(8, 5, 2, 4.20, 'PAVED_HIGHWAY', 40.0, 1.00, 4.200);
+
+-- Cache examples 
+INSERT INTO route_execution_cache (route_id, vehicle_id, origin_node, destination_node, path_node_sequence, total_distance_km, total_travel_time_mins, nodes_visited_count, algorithm_used) VALUES
+(1, 1, 1, 4, '[1, 2, 3, 4]', 5.85, 14.60, 4, 'ASTAR');
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

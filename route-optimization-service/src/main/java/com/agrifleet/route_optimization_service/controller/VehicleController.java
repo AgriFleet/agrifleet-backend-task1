@@ -3,6 +3,7 @@ package com.agrifleet.route_optimization_service.controller;
 import com.agrifleet.route_optimization_service.dto.LocationUpdateRequest;
 import com.agrifleet.route_optimization_service.dto.VehicleDto;
 import com.agrifleet.route_optimization_service.service.VehicleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class VehicleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VehicleDto create(@RequestBody VehicleDto dto) {
+    public VehicleDto create(@Valid @RequestBody VehicleDto dto) {
         return vehicleService.createVehicle(dto);
     }
 

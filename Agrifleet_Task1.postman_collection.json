@@ -1,0 +1,283 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+		"name": "Agrifleet Task 1 (Route Optimization)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Routes",
+			"item": [
+				{
+					"name": "Optimize Route",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"vehicleId\": 1,\n  \"startNodeId\": 1,\n  \"endNodeId\": 5,\n  \"algorithm\": \"A_STAR\",\n  \"weatherAware\": true,\n  \"weightUnitTonnes\": 10.5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/routes/optimize",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"routes",
+								"optimize"
+							]
+						}
+					}
+				},
+				{
+					"name": "Compare Routes",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"vehicleId\": 1,\n  \"startNodeId\": 1,\n  \"endNodeId\": 5,\n  \"weatherAware\": true,\n  \"weightUnitTonnes\": 10.5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/routes/compare",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"routes",
+								"compare"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Routes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/routes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"routes"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Vehicles",
+			"item": [
+				{
+					"name": "Create Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Heavy Harvester A\",\n  \"vehicleType\": \"COMBINE_HARVESTER\",\n  \"maxWeightTonnes\": 15.5,\n  \"speedFactor\": 0.8,\n  \"isAvailable\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/vehicles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"vehicles"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Vehicle Location",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"latitude\": 45.1234,\n  \"longitude\": -93.1234,\n  \"currentNodeId\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/vehicles/1/location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"vehicles",
+								"1",
+								"location"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Road Nodes",
+			"item": [
+				{
+					"name": "Create Node",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Main Depot\",\n  \"latitude\": 45.0000,\n  \"longitude\": -93.0000,\n  \"nodeType\": \"DEPOT\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/nodes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"nodes"
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Nodes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/nodes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"nodes"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Road Edges",
+			"item": [
+				{
+					"name": "Create Edge",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"sourceNodeId\": 1,\n  \"targetNodeId\": 2,\n  \"distanceKm\": 5.2,\n  \"surfaceType\": \"PAVED\",\n  \"speedLimitKmh\": 60.0,\n  \"isBidirectional\": true,\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/edges",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"edges"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Weather",
+			"item": [
+				{
+					"name": "Update Weather at Node",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"condition\": \"HEAVY_RAIN\",\n  \"intensity\": 0.8\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/weather/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"weather",
+								"1"
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}
+

@@ -12,4 +12,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     List<Vehicle> findByIsAvailableTrue();
 
     List<Vehicle> findByVehicleType(Vehicle.VehicleType vehicleType);
+
+    List<Vehicle> findByCurrentNodeId(Long currentNodeId);
 }

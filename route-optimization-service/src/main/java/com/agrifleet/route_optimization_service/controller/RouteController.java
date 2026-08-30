@@ -8,6 +8,7 @@ import com.agrifleet.route_optimization_service.dto.RouteSummaryDto;
 import com.agrifleet.route_optimization_service.model.RouteRequest;
 import com.agrifleet.route_optimization_service.model.RouteResult;
 import com.agrifleet.route_optimization_service.service.RouteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class RouteController {
 
     /** Core endpoint - computes the optimal route (A* or Dijkstra). */
     @PostMapping("/optimize")
-    public RouteResponse optimize(@RequestBody OptimizeRouteRequest request) {
+    public RouteResponse optimize(@Valid @RequestBody OptimizeRouteRequest request) {
         return routeService.optimize(request);
     }
 
@@ -57,7 +58,7 @@ public class RouteController {
 
     /** A* vs Dijkstra benchmark on the same query pair. */
     @PostMapping("/compare")
-    public CompareResultDto compare(@RequestBody OptimizeRouteRequest request) {
+    public CompareResultDto compare(@Valid @RequestBody OptimizeRouteRequest request) {
         return routeService.compare(request);
     }
 }

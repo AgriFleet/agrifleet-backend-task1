@@ -1,6 +1,8 @@
 package com.agrifleet.route_optimization_service.dto;
 
 import com.agrifleet.route_optimization_service.model.RoadNode;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +13,10 @@ import java.time.LocalDateTime;
  */
 public record NodeDto(
         Long id,
-        String name,
-        Double latitude,
-        Double longitude,
-        RoadNode.NodeType nodeType,
+        @NotBlank(message = "name is required") String name,
+        @NotNull(message = "latitude is required") Double latitude,
+        @NotNull(message = "longitude is required") Double longitude,
+        @NotNull(message = "nodeType is required") RoadNode.NodeType nodeType,
         String farmId,
         Boolean isActive,
         LocalDateTime createdAt

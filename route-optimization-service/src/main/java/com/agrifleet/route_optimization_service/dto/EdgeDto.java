@@ -1,6 +1,8 @@
 package com.agrifleet.route_optimization_service.dto;
 
 import com.agrifleet.route_optimization_service.model.RoadEdge;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 /**
  * Request/response payload for a directed road segment ({@code road_edges}).
@@ -9,11 +11,13 @@ import com.agrifleet.route_optimization_service.model.RoadEdge;
  */
 public record EdgeDto(
         Long id,
-        Long sourceNodeId,
-        Long targetNodeId,
-        Double distanceKm,
-        RoadEdge.SurfaceType surfaceType,
-        Double speedLimitKmh,
+        @NotNull(message = "sourceNodeId is required") Long sourceNodeId,
+        @NotNull(message = "targetNodeId is required") Long targetNodeId,
+        @NotNull(message = "distanceKm is required")
+        @Positive(message = "distanceKm must be greater than 0") Double distanceKm,
+        @NotNull(message = "surfaceType is required") RoadEdge.SurfaceType surfaceType,
+        @NotNull(message = "speedLimitKmh is required")
+        @Positive(message = "speedLimitKmh must be greater than 0") Double speedLimitKmh,
         Double weightLimitTonnes,
         Boolean isBidirectional,
         Boolean isActive

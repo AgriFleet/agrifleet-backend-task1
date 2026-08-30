@@ -3,6 +3,7 @@ package com.agrifleet.route_optimization_service.controller;
 import com.agrifleet.route_optimization_service.dto.EdgeDto;
 import com.agrifleet.route_optimization_service.model.RoadEdge.SurfaceType;
 import com.agrifleet.route_optimization_service.service.GraphService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ public class EdgeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EdgeDto create(@RequestBody EdgeDto dto) {
+    public EdgeDto create(@Valid @RequestBody EdgeDto dto) {
         return graphService.createEdge(dto);
     }
 

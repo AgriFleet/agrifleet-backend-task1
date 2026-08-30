@@ -3,6 +3,7 @@ package com.agrifleet.route_optimization_service.controller;
 import com.agrifleet.route_optimization_service.dto.NodeDto;
 import com.agrifleet.route_optimization_service.model.RoadNode.NodeType;
 import com.agrifleet.route_optimization_service.service.GraphService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,7 @@ public class NodeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public NodeDto create(@RequestBody NodeDto dto) {
+    public NodeDto create(@Valid @RequestBody NodeDto dto) {
         return graphService.createNode(dto);
     }
 

@@ -13,4 +13,6 @@ public interface WeatherConditionRepository extends JpaRepository<WeatherConditi
     Optional<WeatherCondition> findByNodeId(Long nodeId);
 
     List<WeatherCondition> findByCondition(WeatherCondition.Condition condition);
+
+    void deleteByNodeId(Long nodeId);
 }

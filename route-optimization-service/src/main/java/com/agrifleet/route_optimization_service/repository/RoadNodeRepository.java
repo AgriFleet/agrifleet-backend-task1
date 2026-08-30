@@ -13,6 +13,8 @@ public interface RoadNodeRepository extends JpaRepository<RoadNode, Long> {
 
     List<RoadNode> findByIsActiveTrue();
 
+    List<RoadNode> findByIsActive(Boolean isActive);
+
     List<RoadNode> findByNameContainingIgnoreCase(String name);
 
     long countByNodeType(RoadNode.NodeType nodeType);

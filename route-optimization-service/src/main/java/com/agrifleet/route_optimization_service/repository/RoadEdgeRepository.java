@@ -14,6 +14,8 @@ public interface RoadEdgeRepository extends JpaRepository<RoadEdge, Long> {
 
     List<RoadEdge> findBySourceNodeIdAndIsActiveTrue(Long sourceNodeId);
 
+    List<RoadEdge> findBySourceNodeIdOrTargetNodeId(Long sourceNodeId, Long targetNodeId);
+
     List<RoadEdge> findBySurfaceType(RoadEdge.SurfaceType surfaceType);
 
     List<RoadEdge> findByIsActiveTrue();

@@ -74,7 +74,9 @@ public class AStarRouter {
 
             List<RoadEdgeEntity> edges = adjacencyList.getOrDefault(currentId, Collections.emptyList());
             for (RoadEdgeEntity edge : edges) {
-                Long neighborId = edge.getVNode();
+                // Edges are registered under both endpoints (undirected), so the neighbour is
+                // whichever end is NOT the node currently being expanded.
+                Long neighborId = edge.getUNode().equals(currentId) ? edge.getVNode() : edge.getUNode();
                 if (closedSet.contains(neighborId)) {
                     continue;
                 }
